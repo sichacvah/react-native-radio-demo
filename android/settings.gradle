@@ -1,0 +1,7 @@
+rootProject.name = 'radioDemo'
+
+include ':app'
+include ':react-native-radio-player'
+project(':react-native-radio-player').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-radio-player/android')
+include ':react-native-circular-seek-bar'
+project(':react-native-circular-seek-bar').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-circular-seek-bar/android')
