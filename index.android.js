@@ -12,13 +12,19 @@ import {
   TouchableOpacity,
   View,
   PixelRatio,
-  Dimensions
+  Dimensions,
+  StatusBar
 } from 'react-native';
 import Player from 'react-native-radio-player'
 import CircularSeekBarView from 'react-native-circular-seek-bar'
 const { height, width } = Dimensions.get('window')
 
 export default class radioDemo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { played: false }
+  }
+
   stop() {
     Player.stop()
   }
@@ -27,9 +33,22 @@ export default class radioDemo extends Component {
     Player.start()
   }
 
+  toggle() {
+    if (this.state.played) {
+      this.setState({played: false}, this.stop);
+    } else {
+      this.setState({played: true}, this.start);
+    }
+  }
+
   render() {
     return (
-      <View style={styles.container}>        
+      <View style={styles.container}>     
+        <StatusBar
+          backgroundColor="rgba(0,0,0,0.2)"
+          barStyle="light-content"
+          translucent={true}
+        />   
         <CircularSeekBarView
           circleColor="#d50000"
           circleProgressColor="#fff"
@@ -51,14 +70,12 @@ export default class radioDemo extends Component {
             height: PixelRatio.getPixelSizeForLayoutSize(130),
             elevation: 7
           }}
-
-
         />
         <View style={styles.buttons}>
-          <TouchableOpacity onPress={this.start}>
+          <TouchableOpacity onPress={this.toggle.bind(this)}>
             <View>
               <Text style={styles.welcome}>
-                Start
+                {(!this.state.played ? "Start" : "Stop")}
               </Text>
             </View>
           </TouchableOpacity>
@@ -74,7 +91,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: buttonWidth,
     width: buttonWidth,
-    top: height/2 - buttonWidth/2 - 10,
+    top: height/2 - buttonWidth/2,
     left: width/2 - buttonWidth/2,
     justifyContent: 'center',
     backgroundColor: 'white',
