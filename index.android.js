@@ -13,25 +13,27 @@ import {
   View,
   PixelRatio,
   Dimensions,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
-import Player from 'react-native-radio-player'
+import player from 'react-native-radio-player'
+const { Player, radioPlayerTask } = player
 import CircularSeekBarView from 'react-native-circular-seek-bar'
 const { height, width } = Dimensions.get('window')
 
 export default class radioDemo extends Component {
   constructor(props) {
     super(props);
-    this.state = { played: false }
+    this.state = { played: false, loading: false }
   }
 
   componentDidMount() {
-    Player.addListener("start", () => this.setState({played: true}))
+    Player.addListener("start", () => this.setState({played: true, loading: false}))
     Player.addListener("stop", () =>  this.setState({played: false}))
   }
 
   stop() {
-    Player.stop()
+    Player.stopPlayerService()
   }
 
   start() {
@@ -40,9 +42,10 @@ export default class radioDemo extends Component {
 
   toggle() {
     if (this.state.played) {
-      this.setState({played: false}, this.stop);
+      this.stop();
     } else {
-      this.setState({played: true}, this.start);
+      this.start();
+      this.setState({loading: true})
     }
   }
 
@@ -61,6 +64,9 @@ export default class radioDemo extends Component {
           circleYRadius={PixelRatio.getPixelSizeForLayoutSize(130)}
           pointerColor="#d50000"
           endAngle={180}
+          onChangeProgress={(progress) => {
+            Player.setVolume((100 - progress) / 100)
+          }}
           strokeWidth={PixelRatio.getPixelSizeForLayoutSize(3)}
           max={100}
           progress={30}
@@ -77,13 +83,14 @@ export default class radioDemo extends Component {
           }}
         />
         <View style={styles.buttons}>
+          {this.state.loading ? <ActivityIndicator animating={true} color="#d50000" size="large"/> :
           <TouchableOpacity onPress={this.toggle.bind(this)}>
             <View>
               <Text style={styles.welcome}>
                 {(!this.state.played ? "Start" : "Stop")}
               </Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
       </View>
     );
@@ -122,3 +129,4 @@ const styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('radioDemo', () => radioDemo);
+AppRegistry.registerHeadlessTask('radioPlayerTask', () => radioPlayerTask);
