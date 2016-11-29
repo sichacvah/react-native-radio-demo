@@ -25,12 +25,17 @@ export default class radioDemo extends Component {
     this.state = { played: false }
   }
 
+  componentDidMount() {
+    Player.addListener("start", () => this.setState({played: true}))
+    Player.addListener("stop", () =>  this.setState({played: false}))
+  }
+
   stop() {
     Player.stop()
   }
 
   start() {
-    Player.start()
+    Player.startPlayerService()
   }
 
   toggle() {
